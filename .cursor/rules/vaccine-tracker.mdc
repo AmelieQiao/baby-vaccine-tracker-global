@@ -10,6 +10,7 @@ description: >
   `references/vaccine-master-matrix.md` (CN/US/DE), adds planning rows with `批号`=todo and
   🇨🇳🇺🇸🇩🇪 prefixes on vaccine names. Do NOT require the user to say "skill" — trigger
   whenever vaccine planning or record digitization is the clear intent.
+
 ---
 
 # Baby Vaccine Tracker
@@ -51,6 +52,7 @@ OR shares a Feishu table URL during onboarding.
 ```
 
 Feishu credentials needed (ask once, remember for session):
+
 - App ID and App Secret: from 飞书开放平台 → 你的应用 → 凭证与基础信息
 - Table URL: extract app_token (after /base/, before ?) and table_id (value of ?table=)
 
@@ -65,11 +67,11 @@ At end of onboarding in Tier 2: batch-write all extracted records, write planned
 
 First, determine which phase the user needs:
 
-| Signal | Phase |
-|--------|-------|
-| "I'm setting this up for the first time" / "我刚开始用" / uploads vaccine book photos | → **ONBOARDING** |
-| "What vaccines are due this month?" / "下次要打什么?" / "help me schedule" | → **DAILY USE** |
-| "My child got a new vaccine" / "我刚打完了" | → **UPDATE RECORDS** |
+| Signal                                                       | Phase                |
+| ------------------------------------------------------------ | -------------------- |
+| "I'm setting this up for the first time" / "我刚开始用" / uploads vaccine book photos | → **ONBOARDING**     |
+| "What vaccines are due this month?" / "下次要打什么?" / "help me schedule" | → **DAILY USE**      |
+| "My child got a new vaccine" / "我刚打完了"                  | → **UPDATE RECORDS** |
 
 ---
 
@@ -98,14 +100,15 @@ Let's set up your child's vaccine tracker. A few quick questions:
 
 **How standard selection affects the rest of the skill:**
 
-| Selection | Gap analysis basis | Schedule output | Difference flags |
-|-----------|-------------------|-----------------|-----------------|
-| A — China only | China NIP + self-paid list | China timing only | None |
-| B — US only | CDC/AAP schedule | US timing | None |
-| C — Europe only | WHO EPI + chosen country | EU timing | None |
-| D — All | Most comprehensive union of all three | China timing as default, notes EU/US variants | ✅ Flags where standards differ (e.g. MMR at 8m CN vs 12m US/EU; PCV in NIP in US but not CN) |
+| Selection       | Gap analysis basis                    | Schedule output                               | Difference flags                                             |
+| --------------- | ------------------------------------- | --------------------------------------------- | ------------------------------------------------------------ |
+| A — China only  | China NIP + self-paid list            | China timing only                             | None                                                         |
+| B — US only     | CDC/AAP schedule                      | US timing                                     | None                                                         |
+| C — Europe only | WHO EPI + chosen country              | EU timing                                     | None                                                         |
+| D — All         | Most comprehensive union of all three | China timing as default, notes EU/US variants | ✅ Flags where standards differ (e.g. MMR at 8m CN vs 12m US/EU; PCV in NIP in US but not CN) |
 
 Load only the relevant reference files based on selection:
+
 - A → `references/vaccine-schedule-cn.md` only
 - B → `references/vaccine-schedule-intl.md` (US section) only
 - C → `references/vaccine-schedule-intl.md` (EU section) only
@@ -113,15 +116,17 @@ Load only the relevant reference files based on selection:
 
 Always load `references/vaccine-rules.md` regardless of standard selected.
 
+After digitizing / whenever building the planning backlog for the user, also load `references/vaccine-master-matrix.md` and follow **Step 3b** (master matrix comparison, `批号`=todo planning rows, flag prefixes on `疫苗名称`).
+
 ### Step 2 — Parse Vaccine Data (Photo OR Feishu Table)
 
 **Determine data source first:**
 
-| User provides | Action |
-|--------------|--------|
-| Photos only | Extract from photos → write to Feishu table |
-| Feishu table link only (already filled) | Read table via API → use as ground truth |
-| Both photos + Feishu link | Read table first → merge with photo extraction → ask user to resolve conflicts |
+| User provides                           | Action                                                       |
+| --------------------------------------- | ------------------------------------------------------------ |
+| Photos only                             | Extract from photos → write to Feishu table                  |
+| Feishu table link only (already filled) | Read table via API → use as ground truth                     |
+| Both photos + Feishu link               | Read table first → merge with photo extraction → ask user to resolve conflicts |
 
 **If reading from Feishu table:**
 Load `references/feishu-api.md` → Step 1 (get token) + Step 2 (read all records).
@@ -129,6 +134,7 @@ Parse each record's fields into the structured format below.
 
 **If extracting from photos:**
 For each vaccine entry, capture:
+
 - Vaccine name (疫苗名称) — use the exact name on the booklet
 - Dose number (第几针/第几剂)
 - Date administered (接种日期) — YYYY-MM-DD
@@ -198,6 +204,7 @@ Compare the child's actual records against the selected standard(s).
 Load reference files based on the standard selected in Step 1 (see table above).
 
 **Calculate:**
+
 1. Age of each child TODAY
 2. Which vaccines are **completed** ✅
 3. Which are **overdue** ⚠️ (past the recommended window)
@@ -206,6 +213,7 @@ Load reference files based on the standard selected in Step 1 (see table above).
 6. Which vaccines the child has NEVER received (check if catch-up is still possible)
 
 **If standard = D (All), also flag differences between systems:**
+
 - Where CN recommends a vaccine not in US/EU NIP (e.g. HepA, JE)
 - Where US/EU recommends a vaccine not in CN NIP (e.g. PCV13, Hib, Rotavirus)
 - Where timing differs significantly (e.g. MMR: CN at 8m, US/EU at 12m)
@@ -249,6 +257,7 @@ Age today: X years Y months
 After gap analysis, generate a batched schedule to minimize clinic trips.
 
 Rules to apply (read `references/vaccine-rules.md` for full details):
+
 - Minimum interval between live vaccines: 28 days
 - Minimum interval between same-vaccine doses: per schedule
 - Multiple inactivated vaccines CAN be given same day (at different sites)
@@ -284,11 +293,13 @@ Total trips: 3 (vs. 6 if each child goes separately)
 After generating the schedule:
 
 **Tier 2 only** — write planned dates back to Feishu:
+
 - For each upcoming vaccine row, update the `计划接种日期` field
 - Load `references/feishu-api.md` → Step 4 (update record)
 - Also set `状态` = `待预约` for anything due within 60 days
 
 **Tier 1** — output is complete as Markdown. Tell the user:
+
 > "Here's your full schedule. You can copy this into the [Feishu template](https://icn4vo1ydnt0.feishu.cn/base/GrW2bDA2Xao6GTscKDAcDNN6nHb?from=from_copylink) or any spreadsheet tool."
 
 ---
@@ -298,6 +309,7 @@ After generating the schedule:
 When the user asks "what's due?" or "help me plan this month":
 
 **Tier 2** — read directly from Feishu:
+
 1. Load `references/feishu-api.md` → Step 2 (read all records)
    - Filter: `状态` = `待预约` OR `过期未打`
    - Filter: `计划接种日期` within next 60 days
@@ -305,6 +317,7 @@ When the user asks "what's due?" or "help me plan this month":
 3. Show actionable items and offer a batched trip plan
 
 **Tier 1** — ask the user to paste or describe their current records:
+
 > "To show you what's due, I'll need your vaccine records. You can paste your records as text, or upload photos again and I'll re-read them."
 
 **Quick status format:**
@@ -331,6 +344,7 @@ Want me to find a specific date window?
 When user says a vaccine was just administered:
 
 Ask:
+
 1. Which child?
 2. Which vaccine, which dose number?
 3. Date given
@@ -340,12 +354,14 @@ Ask:
 Then:
 
 **Tier 2** — update Feishu directly:
+
 - Load `references/feishu-api.md` → find the matching record (by child + vaccine + dose)
 - Update: `状态` → `已接种`, `接种日期` → today, add brand if provided
 - Recalculate and update `计划接种日期` for the NEXT dose of the same vaccine
 - Confirm: "Updated. Next dose of [vaccine] is now scheduled for [date]."
 
 **Tier 1** — output the updated record as Markdown:
+
 - Show the full updated record for that vaccine (all doses, updated status)
 - State the next due date clearly
 - Remind the user to update their copy of the Feishu template manually
@@ -364,11 +380,11 @@ Then:
 
 Load these as needed — don't load all at once:
 
-| File | When to load |
-|------|--------------|
-| `references/feishu-api.md` | Any time reading from or writing to Feishu table |
-| `references/vaccine-schedule-cn.md` | During gap analysis (China schedule) |
-| `references/vaccine-schedule-intl.md` | If user requested international standards |
-| `references/vaccine-rules.md` | When checking interval rules or scheduling |
-| `references/vaccine-master-matrix.md` | **After digitizing records**：中外主表对照、规划清单、`批号`=todo 行 |
-| `templates/feishu-template-guide.md` | If user asks about the Feishu table setup |
+| File                                  | When to load                                     |
+| ------------------------------------- | ------------------------------------------------ |
+| `references/feishu-api.md`            | Any time reading from or writing to Feishu table |
+| `references/vaccine-schedule-cn.md`   | During gap analysis (China schedule)             |
+| `references/vaccine-schedule-intl.md` | If user requested international standards        |
+| `references/vaccine-rules.md`         | When checking interval rules or scheduling       |
+| `references/vaccine-master-matrix.md` | **After digitizing**：主表对照、规划清单、`批号`=todo   |
+| `templates/feishu-template-guide.md`  | If user asks about the Feishu table setup        |

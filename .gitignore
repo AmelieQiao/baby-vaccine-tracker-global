@@ -1,1 +1,14 @@
-.cursor/
+# Cursor：默认忽略本地杂项，但允许同步项目规则（.mdc）
+.cursor/*
+!.cursor/rules/
+
+# 疫苗本临时栅格化目录（若本地再生成）
+.tmp-vaccine-*/
+
+# macOS
+.DS_Store
+
+# 密钥 / 环境（勿提交飞书 App Secret 等）
+.env
+.env.*
+!.env.example
