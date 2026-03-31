@@ -1,6 +1,6 @@
 **English** | [中文](README_ZH.md)
 
-# 🍼 Baby Vaccine Tracker🇨🇳🇩🇪🇺🇸
+# 🍼 Baby Vaccine Tracker 🇨🇳🇩🇪🇺🇸
 
 The clinic handles the shots. Nobody handles the planning.
 
@@ -51,7 +51,11 @@ Where to paste it, by tool:
 - **Cursor** — See installation section below
 - **Any other AI chat** — Find the "system prompt" or "custom instructions" setting
 
-Once the skill is active, just upload your child's vaccine booklet photos and start. The AI extracts records, identifies gaps, and generates a schedule. Output is a clean Markdown table you can copy into Feishu, Notion, or Excel.
+Once set up, send this message to begin:
+
+**"Start baby vaccine skill"**
+
+Upload your child's vaccine booklet photos and the AI will extract records, identify gaps, and generate a schedule. Output is a clean Markdown table you can copy into Feishu, Notion, or Excel. If you have Feishu API configured, the skill automatically switches to auto-sync mode.
 
 ### Tier 2 — Feishu auto-sync (optional, about 10 min one-time setup)
 
@@ -111,17 +115,44 @@ Left sidebar → Permission Management → search `bitable:app` → enable
 
 Left sidebar → Credentials and Basic Info → copy App ID and App Secret
 
-**Step 4 — Connect to your table**
+**Step 4 — Publish the app**
 
-Open your Feishu table → top-right "..." → Add Document App → find your app → set to "Can Edit"
+Left sidebar → Version Management and Release → Create Version → fill in any version number (e.g. `1.0.0`) and any release notes → Submit for Release. No review required — goes live immediately.
 
-**Step 5 — Done**
+**Step 5 — Copy the template into your own Feishu account**
 
-Give the skill your App ID, App Secret, and table URL during onboarding. It handles the rest.
+Open the [Feishu template](https://icn4vo1ydnt0.feishu.cn/base/GrW2bDA2Xao6GTscKDAcDNN6nHb?from=from_copylink) → top-right "..." → Copy Multidimensional Table → save as your own table. You must use your own copy — the app cannot connect to someone else's table.
+
+**Step 6 — Connect the app to your own table**
+
+Open your own copy of the table → top-right "..." → Add Document App → find your app → set to "Can Edit"
+
+**Step 7 — Done**
+
+Give the skill your App ID, App Secret, and your own table URL during onboarding. It handles the rest.
 
 ---
 
-## Vaccine Standards Covered
+## Customizing the Output
+
+Tell the AI directly how you want things to work — no config files to edit.
+
+A few common scenarios:
+
+**Adjust language and format**
+> "Show vaccine names in Chinese only, skip the English abbreviations"
+> "Give me the schedule as a table, not a list"
+
+**Adjust how the schedule is presented**
+> "Show each child's plan separately, don't combine them"
+> "Only show what's due in the next 3 months, skip everything further out"
+
+**Adjust which standards to reference**
+> "Just use China standards, I don't need the international comparison"
+> "Always show me where China and international standards differ so I can decide"
+
+---
+
 
 | Standard | Coverage |
 |----------|----------|
