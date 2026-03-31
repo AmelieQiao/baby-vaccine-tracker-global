@@ -1,6 +1,6 @@
 [English](README.md) | **中文**
 
-# 🍼 宝宝疫苗助手🇨🇳🇺🇸🇩🇪
+# 🍼 宝宝疫苗助手
 
 医院负责打。没有人负责规划。
 
@@ -12,47 +12,51 @@
 
 ## 你会得到什么
 
-**把纸质疫苗本变成结构化记录** 📲
+**把纸质疫苗本变成结构化记录**
 
 拍照上传，AI 读取每一页的手写内容，自动识别疫苗名称、剂次、日期、品牌、接种机构。不用再对着模糊字迹猜。
 
-**一次看清楚所有该打的疫苗 **🇨🇳🇺🇸🇩🇪
+**一次看清楚所有该打的疫苗**
 
 中国免费疫苗、自费推荐疫苗、欧洲和美国的接种标准，三套体系对比，必打 / 推荐 / 可选全部梳理清楚。以前需要连续几个晚上查资料才能弄明白的事，一次对话就有了答案。
 
-**知道哪里有缺口，以及还来不来得及** 🔎
+**知道哪里有缺口，以及还来不来得及**
 
 对照你孩子的实际记录，AI 帮你找出：哪些已经完成，哪些已经逾期，哪些正在窗口期内，哪些错过了就永远错过了。不再靠感觉猜。
 
-**一份可以直接拿去预约的计划** 🎯
+**一份可以直接拿去预约的计划**
 
 这个月能打什么，下次最早几号去，如果是两个孩子能不能一次门诊一起搞定——AI 把所有约束算进去，给你一份按月排好的行动清单。
 
-**打完一针，更新只需一句话** 🎙️
+**打完一针，更新只需一句话**
 
 "今天给小宝打了流感疫苗，辉瑞的" ——记录自动更新，下次该打什么重新算好。你不需要记任何东西。
 
-**一张随时可查的表格，不用每次都问 AI** 🔑
+**一张随时可查的表格，不用每次都问 AI**
 
-所有记录写进你自己的飞书多维表格，状态高亮，按时间排好。你随时打开都能看，不需要重新开始一段对话。*(需要约 10 分钟的一次性飞书配置)*
+所有记录写进你自己的飞书多维表格，状态高亮，按时间排好。你随时打开都能看，不需要重新开始一段对话。（需要约 10 分钟的一次性飞书配置，见下方说明。）
 
 ---
 
 ## 两种用法
 
-### 直接开用（零配置）
+### 第一层：零配置，任意 AI 工具都能用
 
-把 `SKILL.md` 复制到任何支持图片上传的 AI 工具里，立刻可以用：
+把 `SKILL.md` 的内容粘贴到你的 AI 工具的系统提示词或自定义指令里。设置一次，之后每次对话都自动带着这个 skill，不需要重新上传文件或重新解释。
 
-- 上传孩子的疫苗本照片
-- AI 提取记录、分析缺口、生成排期计划
-- 输出 Markdown 表格，你复制到飞书或 Excel
+不同工具的操作入口：
 
-适用于：Cursor、Claude.ai、ChatGPT 等。
+- **Claude.ai** — 新建一个 Project，在左侧「Project instructions」里粘贴
+- **ChatGPT** — 右上角头像 → Settings → Personalization → Custom Instructions
+- **Cursor** — 见下方安装说明
+- **其他 AI 对话工具** — 找「系统提示词」或「自定义指令」的设置入口
 
-### 飞书自动同步（可选升级，约 10 分钟配置）
+设置好之后，上传孩子的疫苗本照片就可以开始了。AI 提取记录、分析缺口、生成排期计划，输出为 Markdown 表格，你复制到飞书或 Excel 即可。
+
+### 第二层：飞书自动同步（可选，约 10 分钟一次性配置）
 
 配置飞书 API 后，skill 直接读写你的多维表格：
+
 - 自动填表，不用手动复制粘贴
 - 打完针跟 AI 说一声，状态自动更新
 - 下次计划日期写回表格
@@ -61,15 +65,17 @@
 
 ## 安装
 
-### Cursor（推荐）
+### Cursor
 
-**项目级别：**
-1. 在你的项目根目录创建文件夹 `.cursor/rules/`
+**项目级别（只影响当前项目）：**
+
+1. 在项目根目录创建文件夹 `.cursor/rules/`
 2. 在里面新建文件 `vaccine-tracker.mdc`
 3. 把 `SKILL.md` 全部内容粘贴进去，保存
 
-**全局：**
-Cursor → 左下角 ⚙️ → **Cursor Settings** → **Rules for AI** → 粘贴 `SKILL.md` 全部内容
+**全局（影响所有 Cursor 项目）：**
+
+Cursor → 左下角齿轮图标 → Cursor Settings → Rules for AI → 粘贴 `SKILL.md` 全部内容
 
 ### Claude Code
 
@@ -77,7 +83,7 @@ Cursor → 左下角 ⚙️ → **Cursor Settings** → **Rules for AI** → 粘
 git clone https://github.com/AmelieQiao/baby-vaccine-tracker-global ~/.claude/skills/baby-vaccine-tracker-global
 ```
 
-### 其他工具（OpenClaw 等）
+### 其他工具
 
 把 `SKILL.md` 内容粘贴到系统提示词或 skill 配置中。
 
@@ -86,21 +92,32 @@ git clone https://github.com/AmelieQiao/baby-vaccine-tracker-global ~/.claude/sk
 ## 飞书模板
 
 已搭好的多维表格，包含所有字段和视图，复制一份直接用：
-👉 [点击获取模板](https://icn4vo1ydnt0.feishu.cn/base/GrW2bDA2Xao6GTscKDAcDNN6nHb?from=from_copylink)
+
+[点击获取模板](https://icn4vo1ydnt0.feishu.cn/base/GrW2bDA2Xao6GTscKDAcDNN6nHb?from=from_copylink)
 
 ---
 
 ## 飞书 API 配置（可选）
 
-**第一步：** 打开 [open.feishu.cn/app](https://open.feishu.cn/app) → **「创建企业自建应用」** → 名字随意
+**第一步 — 创建飞书自建应用**
 
-**第二步：** 左侧 **「权限管理」** → 搜索 `bitable:app` → 开启
+打开 [open.feishu.cn/app](https://open.feishu.cn/app) → 右上角「创建企业自建应用」→ 名字随意，比如「Vaccine Tracker」
 
-**第三步：** 左侧 **「凭证与基础信息」** → 复制 **App ID** 和 **App Secret**
+**第二步 — 开通权限**
 
-**第四步：** 打开你的飞书多维表格 → 右上角 **「···」** → **「添加文档应用」** → 找到你的应用 → 权限选 **「可编辑」**
+左侧「权限管理」→ 搜索 `bitable:app` → 开启
 
-**第五步：** 在 skill 对话里把 App ID、App Secret 和表格链接告诉 AI，它自动处理剩下的。
+**第三步 — 获取凭证**
+
+左侧「凭证与基础信息」→ 复制 App ID 和 App Secret
+
+**第四步 — 授权你的表格**
+
+打开你的飞书多维表格 → 右上角「···」→「添加文档应用」→ 找到你的应用 → 权限选「可编辑」
+
+**第五步 — 完成**
+
+在 skill 对话里把 App ID、App Secret 和表格链接告诉 AI，它自动处理剩下的。
 
 ---
 
@@ -108,9 +125,9 @@ git clone https://github.com/AmelieQiao/baby-vaccine-tracker-global ~/.claude/sk
 
 | 标准 | 范围 |
 |------|------|
-| 🇨🇳 中国 NIP（免费疫苗） | 完整强制接种时间表 |
-| 🇨🇳 中国自费推荐 | PCV13、Hib、轮状、五联/六联、EV71、流感、水痘、HPV 等 |
-| 🌍 国际标准 | WHO EPI、英国 NHS、德国 STIKO、美国 AAP/CDC |
+| 中国 NIP（免费疫苗） | 完整强制接种时间表 |
+| 中国自费推荐 | PCV13、Hib、轮状、五联/六联、EV71、流感、水痘、HPV 等 |
+| 国际标准 | WHO EPI、英国 NHS、德国 STIKO、美国 AAP/CDC |
 
 ---
 
@@ -120,4 +137,4 @@ git clone https://github.com/AmelieQiao/baby-vaccine-tracker-global ~/.claude/sk
 
 ---
 
-MIT, share, modify, improve.
+MIT License
