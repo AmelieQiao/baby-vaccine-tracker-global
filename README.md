@@ -1,6 +1,6 @@
 **English** | [中文](README_ZH.md)
 
-# 🍼 Baby Vaccine Tracker
+# 🍼 Baby Vaccine Tracker🇨🇳🇺🇸🇩🇪
 
 The clinic handles the shots. Nobody handles the planning.
 
@@ -12,22 +12,22 @@ This skill takes the planning off your plate.
 
 ## What You Get
 
-**Turn the paper booklet into a structured record**
+**Turn the paper booklet into a structured record****📲
 Upload photos of each page. The AI reads the handwriting, pulls out every shot — vaccine name, dose number, date, brand, clinic — and organizes it into a clean record. No manual entry, no squinting at smudged ink.
 
-**See the full picture of what your child needs**
+**See the full picture of what your child needs****🇨🇳🇺🇸🇩🇪
 China's mandatory vaccines, China's recommended self-paid vaccines, and European/US standards — all three systems, side by side. What's essential, what's optional, what's different by country, and when each vaccine needs to happen. The kind of clarity that used to take evenings of research.
 
-**Know exactly where the gaps are — and whether you can still fix them**
+**Know exactly where the gaps are — and whether you can still fix them****🔎
 Matched against your child's actual record, the AI shows you what's complete, what's overdue, what's still within the catch-up window, and what's now too late to start. No more guessing.
 
-**A schedule you can take straight to the clinic**
+**A schedule you can take straight to the clinic****🎯
 What's due this month, the earliest date for the next visit, whether two siblings can be seen in one trip — the AI factors in all the constraints and gives you a month-by-month action plan.
 
-**One sentence to update the record after any visit**
+**One sentence to update the record after any visit**🎙️**
 "Just got the flu shot today, Sanofi" — the record updates, the next due date recalculates. You don't have to track anything.
 
-**A table you can check without starting a new conversation**
+**A table you can check without starting a new conversation****🔑
 Everything lives in your own Feishu table — sorted, color-coded, always current. Open it any time without needing to re-explain anything to the AI. *(Requires ~10 min one-time Feishu setup)*
 
 ---
@@ -114,4 +114,4 @@ This tool provides informational guidance based on published vaccine schedules a
 
 ---
 
-MIT License
+MIT, share, modify, improve.
