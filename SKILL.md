@@ -8,7 +8,8 @@ description: >
   Handles multi-child households, supports both China national program (免费+自费) and
   international/European vaccine standards. After digitizing records, compares to
   `references/vaccine-master-matrix.md` (CN/US/DE), adds planning rows with `批号`=todo and
-  🇨🇳🇺🇸🇩🇪 prefixes on vaccine names. Do NOT require the user to say "skill" — trigger
+  🇨🇳🇺🇸🇩🇪 in **`地区标注`**; **`疫苗名称`** = vaccine name only (no dose wording; use **`剂次`**);
+  **`人工备注`** is user-owned (AI read-only). Do NOT require the user to say "skill" — trigger
   whenever vaccine planning or record digitization is the clear intent.
 ---
 
@@ -129,8 +130,8 @@ Parse each record's fields into the structured format below.
 
 **If extracting from photos:**
 For each vaccine entry, capture:
-- Vaccine name (疫苗名称) — use the exact name on the booklet
-- Dose number (第几针/第几剂)
+- Vaccine name for the **`疫苗名称` column** — canonical name **only** (no 「第X剂」in that column; put dose in **`剂次`**). Booklet text may still list dose separately when parsing.
+- Dose number → field **`剂次`** (第几针/第几剂)
 - Date administered (接种日期) — YYYY-MM-DD
 - Lot number / batch (批号) if visible
 - Brand / manufacturer (品牌/厂家) if visible
@@ -180,16 +181,19 @@ Only execute if in Tier 2 (user has provided Feishu credentials):
 1. **载入** `references/vaccine-master-matrix.md`，并辅以已选标准对应的 `vaccine-schedule-cn.md` / `vaccine-schedule-intl.md` 与 `vaccine-rules.md`。
 2. **在对话中给出**一张「主表向」对照表（可用精简列）：含 **中文名、英文缩写、🇨🇳🇺🇸🇩🇪 地区相关性、建议品牌、典型月龄（分列中/美/德代表）、与哪些针常可同日、活苗间隔提要」——使家长能看到「中外常规全集」与自家孩子的关系。
 3. **归一化已种记录** 再与主表做差集：五联/六联覆盖 DTaP、联苗内 IPV 与 Hib；13 价 ≡ PCV13；ACYW135 与用户约定是否替代 A 群/A+C；乙脑仅灭活则不再要求减毒；等。得出 **尚未发生、但家长应知悉并规划** 的每一剂。
-4. **`疫苗名称` 国旗前缀**：写在名称 **最前**。多国均常规 → **`🇨🇳🇺🇸🇩🇪`**（顺序固定）；仅中国强调 → **`🇨🇳`**；仅美国 → **`🇺🇸`**；德国代表欧陆常规 → **`🇩🇪`**（若为泛欧说明可在备注写「ECDC/各国略有差异」）。可组合，如 **`🇺🇸🇩🇪`** MenB。
-5. **Tier 1**：将差集整理为 Markdown 清单/表；**`批号` 列统一写 `todo`**；列出建议接种月龄窗口、注意点、可会同日疫苗（摘要）。
-6. **Tier 2 飞书**：为差集中每一剂 **新增一行**（勿删已种行）：
+4. **国旗放 `地区标注`，`疫苗名称` 禁止 emoji**：视图按 **`疫苗名称` 分组** 时才能与已种记录对齐。多国均常规 → **`🇨🇳🇺🇸🇩🇪`**（顺序固定）；仅中国强调 → **`🇨🇳`**；仅美国 → **`🇺🇸`**；德国代表欧陆常规 → **`🇩🇪`**（泛欧可在备注写「ECDC/各国略有差异」）。可组合，如 **`🇺🇸🇩🇪`**。若表尚无该列，先 **创建文本列 `地区标注`**（API 见 `feishu-api.md` 字段一节）；列顺序可在飞书里拖到 **`宝宝` 与 `疫苗名称` 之间**。
+5. **`疫苗名称` 不含剂次**：**只写疫苗通用名**（可含缩写如 `(PCV13)`）。**「第1/2/3剂」「加强」「首季/下一季」「18月龄加强」等**一律 **不写进 `疫苗名称`**，而应落在 **`剂次`**、**`计划接种时间`** 或 **`备注`（规划清单）**。
+6. **`人工备注`（用户私有）**：表中须有文本列 **`人工备注`**。AI **仅可读**，用于理解家长补充说明；**禁止**在 `POST`/`PUT`/`batch_create` 等请求的 `fields` 里出现 **`人工备注`**，也禁止用 API **清空或覆盖**该列。
+7. **Tier 1**：将差集整理为 Markdown 清单/表；**`批号` 列统一写 `todo`**；清单中拆列「地区标注 / 疫苗名称 / 剂次」，效果同飞书。
+8. **Tier 2 飞书**：为差集中每一剂 **新增一行**（勿删已种行）：
    - **`批号`** = **`todo`**
-   - **`疫苗名称`** = `国旗前缀 + 规范名称 + 第X剂`（例：`🇨🇳🇺🇸🇩🇪 13价肺炎球菌结合疫苗 (PCV13) 第3剂`）
+   - **`地区标注`** = 国旗字符串（例：`🇨🇳🇺🇸🇩🇪`），无适用地区则留空
+   - **`疫苗名称`** = **纯名称**，**无** emoji、**无** 「第X剂」等（例：`13价肺炎球菌结合疫苗 (PCV13)`）；**`剂次`** = `1` / `2` / … / 或 `年度` 等（与表字段类型一致即可）
    - **`生产企业`** = 主表建议品牌或「门诊备选：…」
    - **`计划接种时间`**（或表中同类字段）= 目标月龄/日历窗口 + 一句关键提示
    - **`备注`** = 必须以 **`规划清单|plan_id=<唯一slug>`** 开头，后接间隔/活疫苗/与何针可同日/门诊针数上限等。
    - **防重**：写入前读取表格，若已存在相同 `plan_id` 于 `备注` 中则 **跳过**。
-7. **仅计划未种、未填批号的行**（如已手写五联第3针日期）：应补上 **`批号`=`todo`** 并可选在 `疫苗名称` 加上应标国旗，与上述规范一致。
+9. **仅计划未种、未填批号的行**：应 **`批号`=`todo`**；国旗在 **`地区标注`**；**勿**把国旗或剂次写进 `疫苗名称`。
 
 ### Step 4 — Gap Analysis
 
@@ -340,9 +344,11 @@ Ask:
 Then:
 
 **Tier 2** — update Feishu directly:
-- Load `references/feishu-api.md` → find the matching record (by child + vaccine + dose)
-- Update: `状态` → `已接种`, `接种日期` → today, add brand if provided
-- Recalculate and update `计划接种日期` for the NEXT dose of the same vaccine
+- Load `references/feishu-api.md` → find the matching record (by child + **`疫苗名称`(纯名)** + **`剂次`**)
+- Update: `状态` → `已接种`（若有该字段）, `接种日期` → today, `生产企业`/批号等若用户提供则写入；**`疫苗名称` 仍不写剂次**
+- Recalculate and update `计划接种日期` / `计划接种时间` for the NEXT dose of the same vaccine
+- **Never** include **`人工备注`** in the update payload（该列仅用户编辑）
+- **批号**：规划行原为 **`todo`** 的，在用户确认已接种后 **改为空或真实批号**（勿再留 `todo`），便于「待补批号」类视图自动排除该行。
 - Confirm: "Updated. Next dose of [vaccine] is now scheduled for [date]."
 
 **Tier 1** — output the updated record as Markdown:
@@ -370,5 +376,5 @@ Load these as needed — don't load all at once:
 | `references/vaccine-schedule-cn.md` | During gap analysis (China schedule) |
 | `references/vaccine-schedule-intl.md` | If user requested international standards |
 | `references/vaccine-rules.md` | When checking interval rules or scheduling |
-| `references/vaccine-master-matrix.md` | **After digitizing records**：中外主表对照、规划清单、`批号`=todo 行 |
+| `references/vaccine-master-matrix.md` | **After digitizing**：主表对照、规划清单；`疫苗名称` 不含剂次；勿写 **`人工备注`** |
 | `templates/feishu-template-guide.md` | If user asks about the Feishu table setup |

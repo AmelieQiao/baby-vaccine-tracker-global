@@ -217,18 +217,44 @@ def feishu_ms_to_date(ms: int) -> str:
 
 ---
 
+## Add a field (新增列)
+
+Create with `POST` `.../apps/{app_token}/tables/{table_id}/fields`:
+
+```python
+requests.post(
+    f"https://open.feishu.cn/open-apis/bitable/v1/apps/{app_token}/tables/{table_id}/fields",
+    headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json; charset=utf-8"},
+    json={"field_name": "地区标注", "type": 1},  # 1 = 文本
+).json()
+
+# 用户私有备注（AI 只读：写入记录时不要带此字段）
+requests.post(
+    f"https://open.feishu.cn/open-apis/bitable/v1/apps/{app_token}/tables/{table_id}/fields",
+    headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json; charset=utf-8"},
+    json={"field_name": "人工备注", "type": 1},
+).json()
+```
+
+New fields append at the end of the table; **reorder in Feishu UI** (e.g. **`地区标注`** 在 **`宝宝`** 与 **`疫苗名称`** 之间；**`人工备注`** 可放在表末或你顺手的位置)。
+
+---
+
 ## Field Name Mapping (for writing records)
 
 Use these EXACT Chinese field names when writing to the table:
 
 | Field key to use in API | Type | Notes |
 |------------------------|------|-------|
-| `疫苗名称` | text | Match exactly to 单选 options |
-| `孩子` | text | Child's name as set up in onboarding |
+| `宝宝` | SingleSelect / text | User table may use 宝宝1/宝宝2 or nicknames |
+| `地区标注` | text | **🇨🇳🇺🇸🇩🇪 flags only**; keep `疫苗名称` emoji-free for grouping in views |
+| `疫苗名称` | text | **Vaccine generic name only** — no 「第X剂」/加强/首季等，no flag emoji；dose only in `剂次` |
+| `人工备注` | text | **User-owned. AI: read OK; never include in POST/PUT/batch `fields`.** |
+| `孩子` | text | Legacy template field; prefer `宝宝` if that is the table column |
 | `剂次` | number | Integer: 1, 2, 3, 4 |
 | `接种日期` | number | Unix ms timestamp |
 | `品牌/厂家` | text | |
-| `批号` | text | Optional |
+| `批号` | text | 规划行可用 **`todo`** 占位；**接种后**改为真实批号或清空，勿长期留 `todo`（便于视图筛选） |
 | `接种机构` | text | |
 | `状态` | text | Must be: 已接种 / 待预约 / 过期未打 / 不适用 |
 | `计划接种日期` | number | Unix ms timestamp, or null |
