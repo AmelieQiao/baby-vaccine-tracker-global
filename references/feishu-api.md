@@ -249,7 +249,7 @@ Use these EXACT Chinese field names when writing to the table:
 | `宝宝` | SingleSelect / text | User table may use 宝宝1/宝宝2 or nicknames |
 | `地区标注` | text | **🇨🇳🇺🇸🇩🇪 flags only**; keep `疫苗名称` emoji-free for grouping in views |
 | `疫苗名称` | text | **Vaccine generic name only** — no 「第X剂」/加强/首季等，no flag emoji；dose only in `剂次` |
-| `人工备注` | text | **User-owned. AI: read OK; never include in POST/PUT/batch `fields`.** |
+| `人工备注` | text | **User-owned. AI: read for plan timing — parse `YY.MM` / `YYYY.MM` (e.g. `26.10` → 2026-10) as the canonical target month; never include in POST/PUT/batch `fields`.** If this conflicts with evidence-based windows, flag on next plan discussion. |
 | `孩子` | text | Legacy template field; prefer `宝宝` if that is the table column |
 | `剂次` | number | Integer: 1, 2, 3, 4 |
 | `接种日期` | number | Unix ms timestamp |

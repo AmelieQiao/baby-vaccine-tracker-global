@@ -9,7 +9,7 @@ description: >
   international/European vaccine standards. After digitizing records, compares to
   `references/vaccine-master-matrix.md` (CN/US/DE), adds planning rows with `批号`=todo and
   🇨🇳🇺🇸🇩🇪 in **`地区标注`**; **`疫苗名称`** = vaccine name only (no dose wording; use **`剂次`**);
-  **`人工备注`** is user-owned (AI read-only). Do NOT require the user to say "skill" — trigger
+  **`人工备注`** holds authoritative **`YY.MM`** plan months when set (read-only for AI). Do NOT require the user to say "skill" — trigger
   whenever vaccine planning or record digitization is the clear intent.
 ---
 
@@ -59,6 +59,27 @@ Load `references/feishu-api.md` for all API code (auth, read, write, view creati
 
 At end of onboarding in Tier 2: batch-write all extracted records, write planned dates back to
 计划接种日期 field, create views automatically, confirm to user with table link.
+
+### Cursor: run without babysitting (Auto-run + terminal allowlist)
+
+This skill cannot disable Cursor’s **Run** prompts — that is controlled by the **Cursor app**, not by
+`SKILL.md`. Tier 2 often runs **`python` / `python3`** (e.g. Feishu API). To step away after sending
+a prompt:
+
+1. **Turn on Agent auto-run** (not “ask every time”): **Cursor Settings → Agent → Auto-run** — use
+   **Auto-run in sandbox** or, if you accept the risk, **Run everything**. Official note: allowlists
+   are only used when auto-run is enabled; in “ask every time” mode you will still get every prompt.
+2. **Allowlist Python globally** via `~/.cursor/permissions.json` and `terminalAllowlist` entries
+   **`python`** and **`python3`** (prefix match). See [permissions.json reference](https://cursor.com/docs/reference/permissions.md).
+     Create or edit `~/.cursor/permissions.json`; **if this file defines `terminalAllowlist`, it
+   replaces** the in-app terminal allowlist — add other prefixes you need
+   (e.g. `git`, `npm`) in the same array.
+3. If a command starts with **`bash`** / **`sh`** (wrapped one-liners), prefix allowlisting may not
+   match `python3` inside the string — then use **Run everything**, or add **`bash`** (broad; use
+   only if you understand the risk).
+
+**Security:** auto-run and wide allowlists let Agent run code without your click; keep Feishu secrets
+out of committed files and review diffs as usual.
 
 ---
 
@@ -183,14 +204,17 @@ Only execute if in Tier 2 (user has provided Feishu credentials):
 3. **归一化已种记录** 再与主表做差集：五联/六联覆盖 DTaP、联苗内 IPV 与 Hib；13 价 ≡ PCV13；ACYW135 与用户约定是否替代 A 群/A+C；乙脑仅灭活则不再要求减毒；等。得出 **尚未发生、但家长应知悉并规划** 的每一剂。
 4. **国旗放 `地区标注`，`疫苗名称` 禁止 emoji**：视图按 **`疫苗名称` 分组** 时才能与已种记录对齐。多国均常规 → **`🇨🇳🇺🇸🇩🇪`**（顺序固定）；仅中国强调 → **`🇨🇳`**；仅美国 → **`🇺🇸`**；德国代表欧陆常规 → **`🇩🇪`**（泛欧可在备注写「ECDC/各国略有差异」）。可组合，如 **`🇺🇸🇩🇪`**。若表尚无该列，先 **创建文本列 `地区标注`**（API 见 `feishu-api.md` 字段一节）；列顺序可在飞书里拖到 **`宝宝` 与 `疫苗名称` 之间**。
 5. **`疫苗名称` 不含剂次**：**只写疫苗通用名**（可含缩写如 `(PCV13)`）。**「第1/2/3剂」「加强」「首季/下一季」「18月龄加强」等**一律 **不写进 `疫苗名称`**，而应落在 **`剂次`**、**`计划接种时间`** 或 **`备注`（规划清单）**。
-6. **`人工备注`（用户私有）**：表中须有文本列 **`人工备注`**。AI **仅可读**，用于理解家长补充说明；**禁止**在 `POST`/`PUT`/`batch_create` 等请求的 `fields` 里出现 **`人工备注`**，也禁止用 API **清空或覆盖**该列。
+6. **`人工备注`（用户私有 + 规划时间权威）**：表中须有文本列 **`人工备注`**。
+   - AI **只读**：**禁止**在 `POST`/`PUT`/`batch_create` 等请求的 `fields` 里出现 **`人工备注`**，禁止 **清空或覆盖**该列。
+   - **时间约定**：家长在格里写的 **`YY.MM` 或 `YYYY.MM`**（均为阿拉伯数字，例 **`26.10` = 2026年10月**；二位年按 **`20YY`** 解读）表示 **希望接种的目标年月**。只要该片段 **存在且可解析**，**一切与 plan 相关的排序、提醒、「何时该打」** 均以 **`人工备注` 为准**，**优先于** `计划接种时间` 列以及模型按参考程序推算的默认窗口。若无此类数字，再回退到 `计划接种时间` / 月龄推算。
+   - **与参考程序不符时**：若主表/日程知识推断的合理窗口与 **`人工备注` 中的 YY.MM** 明显不一致，在用户 **下一次询问 plan、日程或本月安排** 且涉及 **该待接种行** 时，须 **单列提醒**请家长确认（例：「您备注目标 26.10，按程序常见窗口约在 …，是否仍以备注为准？」）。**不得**擅自修改 `人工备注`。
 7. **Tier 1**：将差集整理为 Markdown 清单/表；**`批号` 列统一写 `todo`**；清单中拆列「地区标注 / 疫苗名称 / 剂次」，效果同飞书。
 8. **Tier 2 飞书**：为差集中每一剂 **新增一行**（勿删已种行）：
    - **`批号`** = **`todo`**
    - **`地区标注`** = 国旗字符串（例：`🇨🇳🇺🇸🇩🇪`），无适用地区则留空
    - **`疫苗名称`** = **纯名称**，**无** emoji、**无** 「第X剂」等（例：`13价肺炎球菌结合疫苗 (PCV13)`）；**`剂次`** = `1` / `2` / … / 或 `年度` 等（与表字段类型一致即可）
    - **`生产企业`** = 主表建议品牌或「门诊备选：…」
-   - **`计划接种时间`**（或表中同类字段）= 目标月龄/日历窗口 + 一句关键提示
+   - **`计划接种时间`**（或表中同类字段）= 辅助说明；**若家长将在 `人工备注` 写 `YY.MM`，实际排期仍以 `人工备注` 为准**（见上条 6）。
    - **`备注`** = 必须以 **`规划清单|plan_id=<唯一slug>`** 开头，后接间隔/活疫苗/与何针可同日/门诊针数上限等。
    - **防重**：写入前读取表格，若已存在相同 `plan_id` 于 `备注` 中则 **跳过**。
 9. **仅计划未种、未填批号的行**：应 **`批号`=`todo`**；国旗在 **`地区标注`**；**勿**把国旗或剂次写进 `疫苗名称`。
@@ -303,10 +327,10 @@ When the user asks "what's due?" or "help me plan this month":
 
 **Tier 2** — read directly from Feishu:
 1. Load `references/feishu-api.md` → Step 2 (read all records)
-   - Filter: `状态` = `待预约` OR `过期未打`
-   - Filter: `计划接种日期` within next 60 days
+   - 待接种行：常以 `批号`=`todo` 或（若有）`状态` 等字段识别；**目标窗口优先解析每行 `人工备注` 中的 `YY.MM`/`YYYY.MM`**，再参考 `计划接种时间` / `计划接种日期`。
+   - Filter upcoming：按 **`人工备注` 解析出的目标月**（或回退字段）落在未来 N 天内 / 本月内。
 2. Ask: "Which child, or both?" if not specified
-3. Show actionable items and offer a batched trip plan
+3. Show actionable items and offer a batched trip plan；对 **`人工备注` 与程序常识可能冲突** 的行应用 Step 3b-6 的 **冲突提醒**。
 
 **Tier 1** — ask the user to paste or describe their current records:
 > "To show you what's due, I'll need your vaccine records. You can paste your records as text, or upload photos again and I'll re-read them."
